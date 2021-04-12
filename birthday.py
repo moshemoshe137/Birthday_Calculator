@@ -1,9 +1,8 @@
 import datetime as dt
+import tkinter as tk
 
 import dateutil.parser
 import dateutil.relativedelta
-
-import tkinter as tk
 
 
 def pretty_date(date):
@@ -23,8 +22,7 @@ def calculate_age(birthday_string, on_date=dt.date.today()):
             birthday = dateutil.parser.parse(birthday_string).date()
         except dateutil.parser.ParserError as e:
             print("Error: Invalid Date")
-            raise e
-            return -1
+            return e
 
     output_string = ""
 
@@ -55,3 +53,47 @@ def calculate_age(birthday_string, on_date=dt.date.today()):
     return output_string
 
 
+def birthday_calculator():
+    def handle_submit(event=None):
+        birthday = ent_birthday.get()
+        string = calculate_age(birthday)
+        lbl_result['text'] = string
+
+    window = tk.Tk()
+    window.title("Birthday Calculator")
+
+    frm_input = tk.Frame(
+        master=window,
+        relief=tk.SUNKEN,
+        borderwidth=3
+    )
+
+    lbl_birthday = tk.Label(master=frm_input, text="Please enter your birthday: ")
+    lbl_birthday.grid(row=0, column=0, sticky="nsew")
+
+    ent_birthday = tk.Entry(master=frm_input, width=20)
+    ent_birthday.grid(row=0, column=1, sticky="nsew")
+
+    btn_submit = tk.Button(master=frm_input, text="Submit", command=handle_submit)
+    btn_submit.grid(row=0, column=2, sticky="nsew")
+
+    lbl_result = tk.Label(master=window, text="", justify=tk.LEFT)
+
+    frm_input.grid(row=0, column=0, padx=5, pady=5, sticky="nsew", ipadx=2, ipady=2)
+    lbl_result.grid(row=1, column=0, sticky="nsew")
+
+    # make everything resizable
+    print(frm_input.grid_size())
+    print(window.grid_size())
+    for row in range(frm_input.grid_size()[1]):
+        frm_input.rowconfigure(row, weight=1)
+    for row in range(window.grid_size()[1]):
+        window.rowconfigure(row, weight=(1 if row == 0 else 3))
+    for col in range(frm_input.grid_size()[0]):
+        frm_input.columnconfigure(col, weight=1)
+    for col in range(window.grid_size()[0]):
+        window.columnconfigure(col, weight=1)
+
+    window.bind("<Return>", handle_submit)
+
+    tk.mainloop()
